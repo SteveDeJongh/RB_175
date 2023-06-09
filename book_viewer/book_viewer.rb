@@ -37,7 +37,11 @@ def chapters_matching(query)
   return results if !query || query.empty?
 
   each_chapter do |number, name, contents|
-    results << {number: number, name: name} if contents.include?(query)
+    matches = {}
+    contents.split("\n\n").each_with_index do |paragraph, index|
+      matches[index] = paragraph if paragraph.include?(query)
+    end
+    results << {number: number, name: name, paragraphs: matches} if matches.any?
   end
 
   results
@@ -48,16 +52,20 @@ get "/search" do
   erb :search
 end
 
-not_found do # redirect for path non existant path.
+not_found do # redirect for path non-existant path.
   redirect "/"
 end
 
 helpers do
 
   def in_paragraphs(text)
-    text.split("\n\n").map do |paragraph|
-      "<p>#{paragraph}</p>"
+    text.split("\n\n").map.with_index do |paragraph, idx|
+      "<p id=paragraph#{idx}>#{paragraph}</p>"
     end.join
+  end
+
+  def highlight(text, term) # Highlights term in given text.
+    text.gsub(term, %(<strong>#{term}</strong>))
   end
 
 end
