@@ -1,0 +1,10 @@
+<!-- views/users.erb -->
+
+<h1>Users</h1>
+<ul>
+ <% @users.keys.each do |name| %>
+   <li>
+      <a href="/<%= name %>"><%= name %></a>
+    </li>
+  <% end %>
+</ul>
