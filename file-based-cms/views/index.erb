@@ -1,4 +1,8 @@
 <!-- views/index.erb -->
+<% if session[:message] %>
+  <p><%= session.delete(:message) %></p>
+<% end %>
+
 <ul>
   <% @files.each do |file| %>
     <li>

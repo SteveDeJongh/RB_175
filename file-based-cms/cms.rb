@@ -3,6 +3,12 @@
 require "sinatra"
 require "sinatra/reloader"
 require "tilt/erubis"
+require "securerandom"
+
+configure do
+  enable :sessions # Enabling session support for Sinatra app.
+  set :session_secret, SecureRandom.hex(32)
+end
 
 root = File.expand_path("..", __FILE__)
 
@@ -13,7 +19,12 @@ end
 
 get "/:filename" do
   file_path = root + "/data/" + params[:filename]
-  
-  headers["Content-Type"] = "text/plain" # Setting content type header response.
-  File.read(file_path)  
+
+  if File.file?(file_path)  
+    headers["Content-Type"] = "text/plain" # Setting content type header response.
+    File.read(file_path)    
+  else
+    session[:message] = "#{params[:filename]} does not exist."
+    redirect "/"
+  end
 end
