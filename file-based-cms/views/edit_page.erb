@@ -1,0 +1,8 @@
+<!-- views/edit_page.rb -->
+<p>Edit content of <%= @filename %>:</p>
+<form action="/<%= @filename %>" method="post">
+  <div>
+    <textarea name="content" id="content" rows="20" cols="100"><%= @content %></textarea>
+  </div>
+  <button type="submit">Save Changes</button>
+</form>
