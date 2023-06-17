@@ -1,5 +1,7 @@
 ENV["RACK_ENV"] = "test"
 
+require "fileutils"
+
 require "minitest/autorun"
 require "rack/test"
 
@@ -12,22 +14,50 @@ class AppTest < Minitest::Test
     Sinatra::Application
   end
 
+  def setup
+    FileUtils.mkdir_p(data_path)
+  end
+
+  def testdown
+    FileUtils.rm_rf(data_path)
+  end
+
+  def create_document(name, content="")
+    File.open(File.join(data_path, name), "w") do |file|
+      file.write(content)
+    end
+  end
+
   def test_index
+    create_document "about.md"
+    create_document "changes.txt"
+
     get "/"
 
     assert_equal 200, last_response.status
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "about.md"
     assert_includes last_response.body, "changes.txt"
-    assert_includes last_response.body, "history.txt"
   end
 
   def test_viewing_text_document
+    create_document "history.txt", "Ruby 0.95 released"
+
     get "/history.txt"
 
     assert_equal 200, last_response.status
     assert_equal "text/plain", last_response["Content-type"]
     assert_includes last_response.body, "Ruby 0.95 released"
+  end
+
+  def test_viewing_markdown
+    create_document "about.md", "# Ruby is..."
+
+    get "/about.md"
+
+    assert_equal 200, last_response.status
+    assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
+    assert_includes last_response.body, "<h1>Ruby is...</h1>"
   end
 
   def test_document_not_found
@@ -44,15 +74,9 @@ class AppTest < Minitest::Test
     refute_includes last_response.body, "notafile.ext does not exist" # Make sure the error message only appears once.
   end
 
-  def test_markdown
-    get "/about.md"
-
-    assert_equal 200, last_response.status
-    assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
-    assert_includes last_response.body, "<h1>Ruby is...</h1>"
-  end
-
   def test_editing_document
+    create_document "changes.txt"
+
     get "/changes.txt/edit"
 
     assert_equal 200, last_response.status
