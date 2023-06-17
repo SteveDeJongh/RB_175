@@ -42,6 +42,27 @@ get "/" do
   erb :index
 end
 
+# View New Document Page, placement of this route needs to be before "/:filename" to be matched first.
+get "/new" do
+  erb :new_page
+end
+
+# Create a New Document
+post "/create" do
+  filename = params[:filename].to_s
+
+  if filename.size == 0
+    session[:message] = "Please provide a valid name."
+    status 422
+    erb :new_page
+  else
+    file_path = File.join(data_path, filename)
+    File.write(file_path, "")
+    session[:message] = "#{filename} has been created."
+    redirect "/"
+  end
+end
+
 # View a files content
 get "/:filename" do
   file_path = File.join(data_path, params[:filename])
