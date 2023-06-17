@@ -1,8 +1,8 @@
 <!-- views/index.erb -->
 <ul>
-  <% @documents.each do |file| %>
+  <% @files.each do |file| %>
     <li>
-      <%= file %>
+      <a href="/<%= file %>"><%= file %></a>
     </li>
   <% end %>
 </ul>
