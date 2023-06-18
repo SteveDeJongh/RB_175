@@ -63,6 +63,32 @@ post "/create" do
   end
 end
 
+# Sign in page
+get "/users/signin" do
+  erb :sign_in
+end
+
+# Submit sign in page
+post "/users/signin" do
+  if params[:username] == "admin" && params[:password] == "secret"
+    session[:username] == params[:username]
+    session[:message] = "Welcome!"
+    redirect "/"
+  else
+    session[:message] = "Invalid credentials"
+    status 422
+    erb :sign_in
+  end
+end
+
+# Sign out
+post "/users/signout" do
+  session.delete(:username)
+  session[:message] = "You have been signed out."
+  redirect "/"
+end
+
+# Deleteing a file
 post "/:filename/delete" do
   file_path = File.join(data_path, params[:filename])
   File.delete(file_path)
