@@ -14,11 +14,11 @@
 
 <p><a href="/new">New Document</a></p>
 
-<% if @state %>
+<% if session[:username] %>
   <form action="/users/signout" method="post">
     <p class="user-status">
       Signed in as <%= session[:username] %>.
-      <button type="submit">Sign Out"</button>
+      <button type="submit">Sign Out</button>
     </p>
   </form>
 

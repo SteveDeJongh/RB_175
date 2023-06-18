@@ -71,7 +71,7 @@ end
 # Submit sign in page
 post "/users/signin" do
   if params[:username] == "admin" && params[:password] == "secret"
-    session[:username] == params[:username]
+    session[:username] = params[:username]
     session[:message] = "Welcome!"
     redirect "/"
   else
