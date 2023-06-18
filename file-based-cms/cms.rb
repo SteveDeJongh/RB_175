@@ -35,6 +35,17 @@ def load_file_content(path)
   end
 end
 
+def user_signed_in?
+  session.key?(:username)  
+end
+
+def require_signed_in_user
+  unless user_signed_in?
+    session[:message] = "You must be signed in to do that."
+    redirect "/"
+  end
+end
+
 # Home directory/index
 get "/" do
   pattern = File.join(data_path, "*")
@@ -44,11 +55,15 @@ end
 
 # View New Document Page, placement of this route needs to be before "/:filename" to be matched first.
 get "/new" do
+  require_signed_in_user
+
   erb :new_page
 end
 
 # Create a New Document
 post "/create" do
+  require_signed_in_user
+
   filename = params[:filename].to_s
 
   if filename.size == 0
@@ -90,6 +105,8 @@ end
 
 # Deleteing a file
 post "/:filename/delete" do
+  require_signed_in_user
+
   file_path = File.join(data_path, params[:filename])
   File.delete(file_path)
 
@@ -111,6 +128,8 @@ end
 
 # Edit File Page
 get "/:filename/edit" do
+  require_signed_in_user
+
   file_path = File.join(data_path, params[:filename])
 
   @filename = params[:filename]
@@ -121,6 +140,8 @@ end
 
 # Submit Edited File Page
 post "/:filename" do
+  require_signed_in_user
+
   file_path = File.join(data_path, params[:filename])
 
   File.write(file_path, params[:content]) # Pulls content from :edit_page name field "content".
