@@ -13,6 +13,8 @@ configure do
   set :session_secret, SecureRandom.hex(32)
 end
 
+##### Helpers #####
+
 def data_path
   if ENV["RACK_ENV"] == "test"
     File.expand_path("../test/data", __FILE__)
@@ -68,6 +70,13 @@ def valid_credentials?(username, password)
   end
 end
 
+def invalid_extension?(ext) # Validate file type is supported, and has a file type.
+  valid_file_type = ["txt", "md"]
+  valid_file_type.include?(ext)
+end
+
+##### Routes #####
+
 # Home directory/index
 get "/" do
   pattern = File.join(data_path, "*")
@@ -87,11 +96,16 @@ post "/create" do
   require_signed_in_user
 
   filename = params[:filename].to_s
+  splitfile = filename.split(".")
 
-  if filename.size == 0
+  if filename.size == 0 # Check file name is entered.
     session[:message] = "Please provide a valid name."
     status 422
-    erb :new_page
+    erb :new_page    
+  elsif !invalid_extension?(splitfile[1]) # Checks file name contains a valid extension.
+    session[:message] = "Invalid file type."
+    status 422
+    erb :new_page    
   else
     file_path = File.join(data_path, filename)
     File.write(file_path, "")

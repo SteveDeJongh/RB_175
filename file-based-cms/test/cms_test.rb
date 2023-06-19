@@ -159,9 +159,15 @@ class AppTest < Minitest::Test
   end
 
   def test_create_new_document_without_filename
-    post "create", {filename: ""}, admin_session
+    post "/create", {filename: ""}, admin_session
     assert_equal 422, last_response.status
     assert_includes last_response.body, "Please provide a valid name"
+  end
+
+  def test_invalid_file_extension
+    post "/create", {filename: "test.test"}, admin_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "Invalid file type."
   end
 
   def test_delete_document
