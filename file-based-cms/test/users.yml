@@ -1,0 +1,4 @@
+# test/users.yml
+
+---
+admin: secret

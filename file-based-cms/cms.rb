@@ -5,6 +5,7 @@ require "sinatra/reloader"
 require "tilt/erubis"
 require "securerandom"
 require "redcarpet"
+require "yaml"
 
 configure do
   enable :sessions # Enabling session support for Sinatra app.
@@ -46,6 +47,15 @@ def require_signed_in_user
   end
 end
 
+def load_user_credentials # Loads appropriate YML file containing user/pass based on environment.
+  credentials_path = if ENV["RACK_ENV"] == "test"
+    File.expand_path("../test/users.yml", __FILE__)
+  else
+    File.expand_path("../users.yml", __FILE__)
+  end
+  YAML.load_file(credentials_path)
+end
+
 # Home directory/index
 get "/" do
   pattern = File.join(data_path, "*")
@@ -85,8 +95,11 @@ end
 
 # Submit sign in page
 post "/users/signin" do
-  if params[:username] == "admin" && params[:password] == "secret"
-    session[:username] = params[:username]
+  credentials = load_user_credentials
+  username = params[:username]
+
+  if credentials.key?(username) && credentials[username] == params[:password]
+    session[:username] = username
     session[:message] = "Welcome!"
     redirect "/"
   else
