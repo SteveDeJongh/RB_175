@@ -100,7 +100,7 @@ post '/create' do
   filename = params[:filename].to_s
   splitfile = filename.split('.')
 
-  if filename.size.empty? # Check file name is entered.
+  if filename.size.zero? # Check file name is entered.
     session[:message] = 'Please provide a valid name.'
     status 422
     erb :new_page
@@ -151,6 +151,18 @@ post '/:filename/delete' do
   File.delete(file_path)
 
   session[:message] = "#{params[:filename]} has been deleted."
+  redirect '/'
+end
+
+# Duplicates a file, and renames to $NAME-copy.$ext
+post '/:filename/duplicate' do
+  require_signed_in_user
+  split_file_name = params[:filename].split(".")
+  file_name = split_file_name.insert(1, "-copy.").join('')
+
+  file_path = data_path
+  FileUtils.cp "#{File.join(data_path, params[:filename])}", "#{data_path}/#{file_name}"
+  session[:message] = "#{file_name} has been created."
   redirect '/'
 end
 

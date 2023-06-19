@@ -225,4 +225,12 @@ class AppTest < Minitest::Test
     assert_nil session[:username]
     assert_includes last_response.body, "Sign In"
   end
+
+  def test_duplicate_a_file
+    create_document("test.txt")
+
+    post "/test.txt/duplicate", {}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal "test-copy.txt has been created.", session[:message]
+  end
 end
