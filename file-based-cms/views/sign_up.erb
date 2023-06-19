@@ -1,0 +1,16 @@
+<!-- /views/sign_up -->
+
+<form action="/users/signup" method="post">
+  <div>
+    <p> Please enter your information below:</p>
+    <label for="username">Username:</label>
+      <input name="username" id="username" type="text" value="<%= @username || "" %>" />
+    </label>
+    <p> Password must be atleast 8 characters long.</p>
+    <label for="password">Password:</label>
+      <input name="password" id="password" type="text" />
+    </label>
+  </div>
+  <p></p>
+  <button type="submit">Sign up!</button>
+</form>

@@ -136,6 +136,29 @@ post '/users/signin' do
   end
 end
 
+# Sign up page
+get '/users/signup' do
+  erb :sign_up
+end
+
+# Submit sign up page
+post '/users/signup' do
+  users = YAML.load(File.read("users.yml"))
+  @username = params[:username]
+
+  if users.key?(@username)
+    session[:message] = "Username already exists, pelease try again."
+    erb :sign_up
+  else
+    password = BCrypt::Password.create(params[:password]) ###### Not Working Yet
+    users[@username.to_sym] = password
+    File.open("users.yml", "w") { |file| file.write(users.to_yaml) }
+
+    session[:message] = "Account created, please sign in!"
+    redirect '/'
+  end
+end
+
 # Sign out
 post '/users/signout' do
   session.delete(:username)
