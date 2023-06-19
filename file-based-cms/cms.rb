@@ -6,6 +6,7 @@ require "tilt/erubis"
 require "securerandom"
 require "redcarpet"
 require "yaml"
+require "bcrypt"
 
 configure do
   enable :sessions # Enabling session support for Sinatra app.
@@ -56,6 +57,17 @@ def load_user_credentials # Loads appropriate YML file containing user/pass base
   YAML.load_file(credentials_path)
 end
 
+def valid_credentials?(username, password)
+  credentials = load_user_credentials
+
+  if credentials.key?(username)
+    bcrypt_password = BCrypt::Password.new(credentials[username])
+    bcrypt_password == password # Callin BCrypt#==, which returns password encrypted with the same salt.
+  else
+    false
+  end
+end
+
 # Home directory/index
 get "/" do
   pattern = File.join(data_path, "*")
@@ -95,10 +107,9 @@ end
 
 # Submit sign in page
 post "/users/signin" do
-  credentials = load_user_credentials
   username = params[:username]
 
-  if credentials.key?(username) && credentials[username] == params[:password]
+  if valid_credentials?(username, params[:password])
     session[:username] = username
     session[:message] = "Welcome!"
     redirect "/"
