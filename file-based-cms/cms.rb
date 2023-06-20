@@ -151,16 +151,16 @@ end
 
 # Submit Sign up page
 post '/users/signup' do
-  users = load_user_credentials #YAML.load(File.read("users.yml"))
+  users = load_user_credentials
   @username = params[:username]
 
   if users.key?(@username)
-    session[:message] = "Username already exists, pelease try again."
+    session[:message] = 'Username already exists, pelease try again.'
     erb :sign_up
   else
     my_password = BCrypt::Password.create(params[:password].to_s).to_s
     users[@username] = my_password
-    File.open(credentials_path_for_yaml, "w") { |file| file.write(users.to_yaml) }
+    File.open(credentials_path_for_yaml, 'w') { |file| file.write(users.to_yaml) }
 
     session[:message] = "#{@username} created, please sign in!"
     redirect '/'
@@ -188,10 +188,9 @@ end
 # Duplicates a file, and renames to $NAME-copy.$ext
 post '/:filename/duplicate' do
   require_signed_in_user
-  split_file_name = params[:filename].split(".")
-  file_name = split_file_name.insert(1, "-copy.").join('')
+  split_file_name = params[:filename].split('.')
+  file_name = split_file_name.insert(1, '-copy.').join('')
 
-  file_path = data_path
   FileUtils.cp "#{File.join(data_path, params[:filename])}", "#{data_path}/#{file_name}"
   session[:message] = "#{file_name} has been created."
   redirect '/'
