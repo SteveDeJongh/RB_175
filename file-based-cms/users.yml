@@ -1,9 +1,3 @@
 ---
 developer: "$2a$12$UU3gQWkO1BJlRng.f4uemegeypxruyM7YTTPnJdDW2fCIe7H2Cmu2"
 basds: asdsa
-:blah: !ruby/string:BCrypt::Password
-  str: "$2a$12$796IozCf6SIBY.OosfxTIuwsE6qjvGuHeR9agQFtSTtGiEwGPtYZa"
-  version: 2a
-  cost: 12
-  salt: "$2a$12$796IozCf6SIBY.OosfxTIu"
-  checksum: wsE6qjvGuHeR9agQFtSTtGiEwGPtYZa

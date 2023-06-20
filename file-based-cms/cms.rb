@@ -60,6 +60,14 @@ def load_user_credentials
   YAML.load_file(credentials_path)
 end
 
+def credentials_path_for_yaml
+  if ENV['RACK_ENV'] == 'test'
+    File.expand_path('../test/users.yml', __FILE__)
+  else
+    File.expand_path('../users.yml', __FILE__)
+  end
+end
+
 def valid_credentials?(username, password)
   credentials = load_user_credentials
 
@@ -121,7 +129,7 @@ get '/users/signin' do
   erb :sign_in
 end
 
-# Submit sign in page
+# Submit Sign in page
 post '/users/signin' do
   username = params[:username]
 
@@ -141,20 +149,20 @@ get '/users/signup' do
   erb :sign_up
 end
 
-# Submit sign up page
+# Submit Sign up page
 post '/users/signup' do
-  users = YAML.load(File.read("users.yml"))
+  users = load_user_credentials #YAML.load(File.read("users.yml"))
   @username = params[:username]
 
   if users.key?(@username)
     session[:message] = "Username already exists, pelease try again."
     erb :sign_up
   else
-    password = BCrypt::Password.create(params[:password]) ###### Not Working Yet
-    users[@username.to_sym] = password
-    File.open("users.yml", "w") { |file| file.write(users.to_yaml) }
+    my_password = BCrypt::Password.create(params[:password].to_s).to_s
+    users[@username] = my_password
+    File.open(credentials_path_for_yaml, "w") { |file| file.write(users.to_yaml) }
 
-    session[:message] = "Account created, please sign in!"
+    session[:message] = "#{@username} created, please sign in!"
     redirect '/'
   end
 end
