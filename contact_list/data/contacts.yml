@@ -1,10 +1,4 @@
 ---
-Steve:
-  :phone:
-  - 123-456-7890
-  :email:
-  -
-  :category: friend
 Dave:
   :phone:
   - 123-123-1234
@@ -22,4 +16,10 @@ George:
   - '1234567890'
   :email:
   - blah@yahoo.ca
+  :category: friend
+Steve:
+  :phone:
+  - '1234567890'
+  :email:
+  - abc@gmail.com
   :category: friend

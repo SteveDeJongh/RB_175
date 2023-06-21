@@ -46,12 +46,27 @@ def add_contact(data, contacts)
   contacts
 end
 
+def display_order(contacts, order)
+  first_letter = order.downcase[0]
+  case first_letter
+  when "c"
+    session[:message] = "Sorting by category."
+    contacts.sort_by {|name, info| info[:category]}
+  when "e"
+    session[:message] = "Sorting by email."
+    contacts.sort_by {|name, info| info[:email][0]}
+  else
+    contacts.sort_by { |name, info| name }
+  end
+end
+
 # Routes #
 
 # Home page
 get '/' do
   if session.key?(:username)
     @contacts = YAML.load_file(data_path)
+    @contacts = display_order(@contacts, params[:sort])
     erb :index
   else
     redirect '/sign_in'

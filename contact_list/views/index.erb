@@ -1,8 +1,12 @@
 <div>
   <h3>Contact list</h3>
 <div>
-
-<p><%= @contacts %></p> <!-- Remove once finished -->
+<form action="/" method="get">
+  <label name="sortby"> Sort by: 
+    <input type="txt" name="sort" value="<%= params[:sort] %>">
+  </label>
+</form>
+<!-- <p><%= @contacts %></p> Remove once finished -->
 
 <ul>
   <% @contacts.each do |name, info| %>
