@@ -97,7 +97,7 @@ class AppTest < Minitest::Test
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, '<textarea'
-    assert_includes last_response.body, %q(<button type='submit')
+    assert_includes last_response.body, %q(<button type="submit")
   end
 
   def test_editing_document_signed_out
@@ -132,7 +132,7 @@ class AppTest < Minitest::Test
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, '<input'
-    assert_includes last_response.body, %q(<button type='submit')
+    assert_includes last_response.body, %q(<button type="submit")
   end
 
   def test_view_new_document_form_signed_out
@@ -194,7 +194,7 @@ class AppTest < Minitest::Test
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, '<input'
-    assert_includes last_response.body, %q(<button type='submit')
+    assert_includes last_response.body, %q(<button type="submit")
   end
 
   def test_signin
