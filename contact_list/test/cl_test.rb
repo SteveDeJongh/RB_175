@@ -31,11 +31,14 @@ class ClTest < Minitest::Test
     assert_includes last_response.body, 'Please sign'
   end
 
-  def test_sign_in
-    post "/sign_in", username: 'dev', password: 'pass'
-    
-    assert_equal last_response.status, 302
-    assert_includes last_response, 'dev has signed in.'
+  def test_index_redirect
+    get '/'
 
+    assert_equal 302, last_response.status
+
+    get last_response['Location']
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, 'Please sign in'
   end
 end

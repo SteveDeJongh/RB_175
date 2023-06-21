@@ -37,8 +37,18 @@ def valid_login?(username, password)
   end
 end
 
+def add_contact(data, contacts)
+  contacts[data[:name]] = {
+    phone: [data[:phone]],
+    email: [data[:email]],
+    category: data[:category]
+  }
+  contacts
+end
+
 # Routes #
 
+# Home page
 get '/' do
   if session.key?(:username)
     @contacts = YAML.load_file(data_path)
@@ -48,10 +58,12 @@ get '/' do
   end
 end
 
+# Get Sign in page
 get '/sign_in' do
   erb :sign_in
 end
 
+# Submit Sign in Information
 post '/sign_in' do
   credentials = load_user_credentials
   @username = params[:username]
@@ -66,37 +78,57 @@ post '/sign_in' do
   end
 end
 
+# Sign Out
 post '/signout' do
   session.delete(:username)
   session[:message] = "You have been signed out."
   redirect '/'
 end
 
+# Add Contact page
 get '/addcontact' do
   erb :addcontact
 end
 
+# Add a contact
 post '/addcontact' do
-  @name = params[:name]
-  @phone = params[:phonenumber]
-  @email = params[:email]
+  @data = {name: params[:name], phone: params[:phonenumber], email: params[:email], category: params[:category]}
   contacts = YAML.load_file(data_path)
+  # contacts = {"Steve"=>{:phone=>["123-456-7890"], :email=>[nil], :category=>"friend"}, "Dave"=>{:phone=>["123-123-1234"], :email=>["blah@gmail.com"], :category=>"friend"}, "test2"=>{:phone=>["test2"], :email=>["test2"], :category=>"work"}, "George"=>{:phone=>["1234567890"], :email=>["blah@yahoo.ca"], :category=>"friend"}}
 
-  if contacts.key?(@name)
+  if contacts.key?(@data[:name])
     session[:message] = "Contact already exists."
   else
     session[:message] = "Contact created successfully."
-    contacts[@name] = {
-      phone: [@phone],
-      email: [@email]
-    }
-    File.open(data_path, "w") { |file| file.write(contacts.to_yaml) }
+    updated_contacts = add_contact(@data, contacts)
+
+    File.open(data_path, "w") { |file| file.write(updated_contacts.to_yaml) }
     redirect '/'
   end
 end
 
-def create_contact(information, contact_list)
+# Delete a Contact
+post '/:contact/delete' do
+  name = params[:contact]
 
+  contacts = YAML.load_file(data_path)
 
+  if contacts.key?(name)
+    session[:message] = "#{name} deleted."
+    contacts.delete(name)
+    File.open(data_path, "w") { |file| file.write(contacts.to_yaml) }
+    redirect '/'
+  else
+    session[:message] = "#{name} does not exist."
+    erb :index
+  end
+end
 
+# Detailed information page for a Contact
+get '/details/:contact' do
+  contacts = YAML.load_file(data_path)
+
+  @name = params[:contact]
+  @info = contacts[@name]
+  erb :details
 end
