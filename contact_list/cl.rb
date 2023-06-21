@@ -13,6 +13,10 @@ end
 
 # Helpers #
 
+def data_path
+  File.expand_path('../data/contacts.yml', __FILE__)
+end
+
 def user_signed_in?
   session.key?(:username)
 end
@@ -37,6 +41,7 @@ end
 
 get '/' do
   if session.key?(:username)
+    @contacts = YAML.load_file(data_path)
     erb :index
   else
     redirect '/sign_in'
@@ -59,4 +64,16 @@ post '/sign_in' do
     session[:message] = 'Invalid credentials.'
     erb :sign_in
   end
+end
+
+get '/addcontact' do
+  erb :addcontact
+end
+
+post '/addcontact' do
+  name = params[:name]
+  phone = params[:phonenumber]
+
+  
+
 end

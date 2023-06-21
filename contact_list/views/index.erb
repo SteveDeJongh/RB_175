@@ -1,0 +1,13 @@
+<div>
+  <h3>Contact list</h3>
+<div>
+
+<p><%= @contacts %></p> <!-- Remove once finished -->
+
+<ul>
+  <% @contacts.each do |name, info| %>
+    <li> Name: <%= name %> Phone: <%= info[:phone] %> </li>
+  <% end %>
+</ul>
+
+<a href="/addcontact">Add a contact</a>
