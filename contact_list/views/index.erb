@@ -6,8 +6,12 @@
 
 <ul>
   <% @contacts.each do |name, info| %>
-    <li> Name: <%= name %> Phone: <%= info[:phone] %> </li>
+    <li> Name: <%= name %> Phone: <%= info[:phone][0] %> Email: <%= info[:email][0] || "N/A" %> </li>
   <% end %>
 </ul>
 
 <a href="/addcontact">Add a contact</a>
+
+<form action="/signout" method="post">
+  <button type="submit">Sign Out</button>
+</form>

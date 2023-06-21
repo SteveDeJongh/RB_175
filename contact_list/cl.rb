@@ -66,14 +66,37 @@ post '/sign_in' do
   end
 end
 
+post '/signout' do
+  session.delete(:username)
+  session[:message] = "You have been signed out."
+  redirect '/'
+end
+
 get '/addcontact' do
   erb :addcontact
 end
 
 post '/addcontact' do
-  name = params[:name]
-  phone = params[:phonenumber]
+  @name = params[:name]
+  @phone = params[:phonenumber]
+  @email = params[:email]
+  contacts = YAML.load_file(data_path)
 
-  
+  if contacts.key?(@name)
+    session[:message] = "Contact already exists."
+  else
+    session[:message] = "Contact created successfully."
+    contacts[@name] = {
+      phone: [@phone],
+      email: [@email]
+    }
+    File.open(data_path, "w") { |file| file.write(contacts.to_yaml) }
+    redirect '/'
+  end
+end
+
+def create_contact(information, contact_list)
+
+
 
 end
