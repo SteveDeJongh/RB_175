@@ -14,7 +14,11 @@ end
 # Helpers #
 
 def data_path
-  File.expand_path('../data/contacts.yml', __FILE__)
+  if ENV['RACK_ENV'] == 'test'
+    File.expand_path('../test/data/contacts.yml', __FILE__)
+  else
+    File.expand_path('../data/contacts.yml', __FILE__)
+  end
 end
 
 def user_signed_in?
@@ -47,16 +51,17 @@ def add_contact(data, contacts)
 end
 
 def display_order(contacts, order)
-  first_letter = order.downcase[0]
+  first_letter = order.nil? ? '' : order.downcase[0]
   case first_letter
-  when "c"
-    session[:message] = "Sorting by category."
-    contacts.sort_by {|name, info| info[:category]}
-  when "e"
-    session[:message] = "Sorting by email."
-    contacts.sort_by {|name, info| info[:email][0]}
+  when 'c'
+    session[:message] = 'Sorting by category.'
+    contacts.sort_by { |_, info| info[:category] }
+  when 'e'
+    session[:message] = 'Sorting by email.'
+    contacts.sort_by { |_, info| info[:email][0] }
   else
-    contacts.sort_by { |name, info| name }
+    session[:message] = 'Sorting by name.'
+    contacts.sort_by { |name, _| name }
   end
 end
 
@@ -96,7 +101,7 @@ end
 # Sign Out
 post '/signout' do
   session.delete(:username)
-  session[:message] = "You have been signed out."
+  session[:message] = 'You have been signed out.'
   redirect '/'
 end
 
@@ -107,17 +112,16 @@ end
 
 # Add a contact
 post '/addcontact' do
-  @data = {name: params[:name], phone: params[:phonenumber], email: params[:email], category: params[:category]}
+  @data = { name: params[:name], phone: params[:phonenumber], email: params[:email], category: params[:category] }
   contacts = YAML.load_file(data_path)
-  # contacts = {"Steve"=>{:phone=>["123-456-7890"], :email=>[nil], :category=>"friend"}, "Dave"=>{:phone=>["123-123-1234"], :email=>["blah@gmail.com"], :category=>"friend"}, "test2"=>{:phone=>["test2"], :email=>["test2"], :category=>"work"}, "George"=>{:phone=>["1234567890"], :email=>["blah@yahoo.ca"], :category=>"friend"}}
 
   if contacts.key?(@data[:name])
-    session[:message] = "Contact already exists."
+    session[:message] = 'Contact already exists.'
   else
-    session[:message] = "Contact created successfully."
+    session[:message] = 'Contact created successfully.'
     updated_contacts = add_contact(@data, contacts)
 
-    File.open(data_path, "w") { |file| file.write(updated_contacts.to_yaml) }
+    File.open(data_path, 'w') { |file| file.write(updated_contacts.to_yaml) }
     redirect '/'
   end
 end
@@ -131,7 +135,7 @@ post '/:contact/delete' do
   if contacts.key?(name)
     session[:message] = "#{name} deleted."
     contacts.delete(name)
-    File.open(data_path, "w") { |file| file.write(contacts.to_yaml) }
+    File.open(data_path, 'w') { |file| file.write(contacts.to_yaml) }
     redirect '/'
   else
     session[:message] = "#{name} does not exist."

@@ -5,12 +5,6 @@ Dave:
   :email:
   - blah@gmail.com
   :category: friend
-test2:
-  :phone:
-  - test2
-  :email:
-  - test2
-  :category: work
 George:
   :phone:
   - '1234567890'
@@ -22,4 +16,16 @@ Steve:
   - '1234567890'
   :email:
   - abc@gmail.com
+  :category: friend
+Albert:
+  :phone:
+  - '1234567890'
+  :email:
+  - albert@gmail.com
+  :category: Work
+Bradislav:
+  :phone:
+  - b dawggg
+  :email:
+  - bdawg@
   :category: friend
