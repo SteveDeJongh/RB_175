@@ -52,20 +52,16 @@ end
 
 # Loads appropriate YML file containing user/pass based on environment.
 def load_user_credentials
+  YAML.load_file(credentials_path)
+end
+
+# Assign correct path to user data based on ENV.
+def credentials_path
   credentials_path = if ENV['RACK_ENV'] == 'test'
                        File.expand_path('../test/users.yml', __FILE__)
                      else
                        File.expand_path('../users.yml', __FILE__)
                      end
-  YAML.load_file(credentials_path)
-end
-
-def credentials_path_for_yaml
-  if ENV['RACK_ENV'] == 'test'
-    File.expand_path('../test/users.yml', __FILE__)
-  else
-    File.expand_path('../users.yml', __FILE__)
-  end
 end
 
 def valid_credentials?(username, password)
