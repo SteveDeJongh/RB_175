@@ -25,10 +25,16 @@ def user_signed_in?
   session.key?(:username)
 end
 
-def load_user_credentials
-  credentials_path = File.expand_path('../users.yml', __FILE__)
+def user_credentials_path
+  credentials_path = if ENV['RACK_ENV'] == 'test'
+                        File.expand_path('../test/users.yml', __FILE__)
+                      else
+                        File.expand_path('../users.yml', __FILE__)
+                      end
+end
 
-  YAML.load_file(credentials_path)
+def load_user_credentials
+  YAML.load_file(user_credentials_path)
 end
 
 def valid_login?(username, password)
@@ -144,7 +150,7 @@ post '/:contact/delete' do
 end
 
 # Detailed information page for a Contact
-get '/details/:contact' do
+get '/:contact/details' do
   contacts = YAML.load_file(data_path)
 
   @name = params[:contact]

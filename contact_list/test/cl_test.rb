@@ -1,5 +1,6 @@
 ENV['RACK_ENV'] = 'test'
 
+require 'fileutils'
 require 'minitest/autorun'
 require 'minitest/reporters'
 require 'rack/test'
@@ -14,12 +15,12 @@ class ClTest < Minitest::Test
     Sinatra::Application
   end
 
-  def setup  
-
+  def setup
+    
   end
 
   def teardown
-    
+
   end
 
   def signed_in_session

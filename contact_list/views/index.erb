@@ -10,7 +10,7 @@
 
 <ul>
   <% @contacts.each do |name, info| %>
-    <li> Name: <a href="/details/<%= name %>"><%= name %></a> Phone: <%= info[:phone][0] %> Email: <%= info[:email][0] || "N/A" %> Category: <%= info[:category] %>
+    <li> Name: <a href="/<%= name %>/details"><%= name %></a> Phone: <%= info[:phone][0] %> Email: <%= info[:email][0] || "N/A" %> Category: <%= info[:category] %>
       <form action="/<%= name %>/delete" method="post">
         <button type="submit">Delete</button>
       </form>
