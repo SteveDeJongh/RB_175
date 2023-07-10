@@ -9,65 +9,70 @@ require 'yaml'
 configure do
   enable :sessions # Enabling session support for Sinatra app.
   set :session_secret, SecureRandom.hex(32)
+  set :erb, :escape_html => true
 end
 
-# Helpers #
+configure(:development) do
+  require 'sinatra/reloader'
+end
 
-def data_path
-  if ENV['RACK_ENV'] == 'test'
-    File.expand_path('../test/data/contacts.yml', __FILE__)
-  else
-    File.expand_path('../data/contacts.yml', __FILE__)
+helpers do
+  def data_path
+    if ENV['RACK_ENV'] == 'test'
+      File.expand_path('../test/data/contacts.yml', __FILE__)
+    else
+      File.expand_path('../data/contacts.yml', __FILE__)
+    end
   end
-end
 
-def user_signed_in?
-  session.key?(:username)
-end
-
-def user_credentials_path
-  credentials_path = if ENV['RACK_ENV'] == 'test'
-                        File.expand_path('../test/users.yml', __FILE__)
-                      else
-                        File.expand_path('../users.yml', __FILE__)
-                      end
-end
-
-def load_user_credentials
-  YAML.load_file(user_credentials_path)
-end
-
-def valid_login?(username, password)
-  credentials = load_user_credentials
-
-  if credentials.key?(username)
-    credentials[username] == password
-  else
-    false
+  def user_signed_in?
+    session.key?(:username)
   end
-end
 
-def add_contact(data, contacts)
-  contacts[data[:name]] = {
-    phone: [data[:phone]],
-    email: [data[:email]],
-    category: data[:category]
-  }
-  contacts
-end
+  def user_credentials_path
+    credentials_path = if ENV['RACK_ENV'] == 'test'
+                          File.expand_path('../test/users.yml', __FILE__)
+                        else
+                          File.expand_path('../users.yml', __FILE__)
+                        end
+  end
 
-def display_order(contacts, order)
-  first_letter = order.nil? ? '' : order.downcase[0]
-  case first_letter
-  when 'c'
-    session[:message] = 'Sorting by category.'
-    contacts.sort_by { |_, info| info[:category] }
-  when 'e'
-    session[:message] = 'Sorting by email.'
-    contacts.sort_by { |_, info| info[:email][0] }
-  else
-    session[:message] = 'Sorting by name.'
-    contacts.sort_by { |name, _| name }
+  def load_user_credentials
+    YAML.load_file(user_credentials_path)
+  end
+
+  def valid_login?(username, password)
+    credentials = load_user_credentials
+
+    if credentials.key?(username)
+      credentials[username] == password
+    else
+      false
+    end
+  end
+
+  def add_contact(data, contacts)
+    contacts[data[:name]] = {
+      phone: [data[:phone]],
+      email: [data[:email]],
+      category: data[:category]
+    }
+    contacts
+  end
+
+  def display_order(contacts, order)
+    first_letter = order.nil? ? '' : order.downcase[0]
+    case first_letter
+    when 'c'
+      session[:message] = 'Sorting by category.'
+      contacts.sort_by { |_, info| info[:category] }
+    when 'e'
+      session[:message] = 'Sorting by email.'
+      contacts.sort_by { |_, info| info[:email][0] }
+    else
+      session[:message] = 'Sorting by name.'
+      contacts.sort_by { |name, _| name }
+    end
   end
 end
 
